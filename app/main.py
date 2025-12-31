@@ -6,12 +6,12 @@ class Validator(ABC):
     def __set_name__(self, owner: Any, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, instance: "BurgerRecipe", owner: Any) -> None:
+    def __get__(self, instance: "BurgerRecipe", owner: Any) -> Any:
         return getattr(instance, self.protected_name)
 
     def __set__(self, instance: "BurgerRecipe", value: int) -> None:
-        if self.validate(value):
-            setattr(instance, self.protected_name, value)
+        self.validate(value)
+        setattr(instance, self.protected_name, value)
 
     @abstractmethod
     def validate(self, value: int) -> bool:
@@ -38,7 +38,7 @@ class OneOf(Validator):
     def __init__(self, *options) -> None:
         self.options = options
 
-    def validate(self, value: tuple) -> bool:
+    def validate(self, value: str) -> bool:
         if value not in self.options:
             raise ValueError(f"Expected {value} to be one of {self.options}.")
         return True
